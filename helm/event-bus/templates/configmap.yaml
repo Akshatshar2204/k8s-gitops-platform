@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "event-bus.fullname" . }}-config
+  labels:
+    {{- include "event-bus.labels" . | nindent 4 }}
+
+data:
+  NODE_ENV: {{ .Values.config.nodeEnv | quote }}
