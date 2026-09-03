@@ -1,0 +1,23 @@
+replicaCount: 2
+
+image:
+  repository: akshat120210/posts
+  pullPolicy: IfNotPresent
+  tag: v1
+
+config:
+  NODE_ENV: production
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 70

@@ -1,0 +1,23 @@
+replicaCount: 2
+
+image:
+  repository: akshat120210/posts
+  pullPolicy: IfNotPresent
+  tag: v1
+
+config:
+  NODE_ENV: staging
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 70
