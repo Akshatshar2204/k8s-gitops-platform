@@ -11,21 +11,21 @@ service:
   targetPort: 4003
 
 config:
-  nodeEnv: production
+  nodeEnv: staging
 
 secret:
   appSecret: change-me
 
 resources:
   limits:
-    cpu: 500m
-    memory: 512Mi
-  requests:
-    cpu: 200m
+    cpu: 300m
     memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 autoscaling:
   enabled: true
   minReplicas: 2
-  maxReplicas: 8
+  maxReplicas: 4
   targetCPUUtilizationPercentage: 70
