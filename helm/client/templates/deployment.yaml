@@ -34,6 +34,11 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
+          env:
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "3000"
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
