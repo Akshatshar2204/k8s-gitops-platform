@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 3
 
 image:
   repository: akshat120210/client
@@ -53,5 +53,5 @@ readinessProbe:
 autoscaling:
   enabled: true
   minReplicas: 2
-  maxReplicas: 4
+  maxReplicas: 8
   targetCPUUtilizationPercentage: 70
