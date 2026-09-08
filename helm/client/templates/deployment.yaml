@@ -44,6 +44,8 @@ spec:
               value: "0.0.0.0"
             - name: PORT
               value: "3000"
+            - name: CHOKIDAR_USEPOLLING
+            - value: "true"
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
