@@ -40,15 +40,29 @@ resources:
     cpu: 50m
     memory: 128Mi
 
+startupProbe:
+  httpGet:
+    path: /
+    port: http
+  failureThreshold: 30
+  periodSeconds: 5
+  timeoutSeconds: 2
+
 livenessProbe:
   httpGet:
     path: /
     port: http
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
 
 readinessProbe:
   httpGet:
     path: /
     port: http
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
 
 autoscaling:
   enabled: true

@@ -40,18 +40,26 @@ resources:
     cpu: 100m
     memory: 256Mi
 
+startupProbe:
+  httpGet:
+    path: /
+    port: http
+  failureThreshold: 30
+  periodSeconds: 5
+  timeoutSeconds: 2
+
 livenessProbe:
   httpGet:
     path: /
     port: http
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
 
 readinessProbe:
   httpGet:
     path: /
     port: http
-
-autoscaling:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 8
-  targetCPUUtilizationPercentage: 70
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
