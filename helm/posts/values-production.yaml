@@ -3,7 +3,7 @@ replicaCount: 2
 image:
   repository: akshat120210/posts
   pullPolicy: IfNotPresent
-  tag: v1
+  tag: v2
 
 config:
   NODE_ENV: production
