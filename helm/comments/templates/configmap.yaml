@@ -6,3 +6,4 @@ metadata:
     {{- include "comments.labels" . | nindent 4 }}
 data:
   NODE_ENV: {{ .Values.config.NODE_ENV | quote }}
+  EVENT_BUS_URL: {{ .Values.config.eventBusUrl | quote }}

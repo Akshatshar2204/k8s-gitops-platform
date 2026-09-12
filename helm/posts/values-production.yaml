@@ -6,6 +6,7 @@ image:
   tag: v2
 
 config:
+  eventBusUrl: "http://event-bus-production:4005"
   NODE_ENV: production
 
 resources:

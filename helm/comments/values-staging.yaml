@@ -11,6 +11,7 @@ service:
   targetPort: 4001
 
 config:
+  eventBusUrl: "http://event-bus-staging:4005"
   NODE_ENV: staging
 
 secret:

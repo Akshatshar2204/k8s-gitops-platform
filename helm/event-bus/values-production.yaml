@@ -11,6 +11,10 @@ service:
   targetPort: 4005
 
 config:
+  postsUrl: "http://posts-production:4000"
+  commentsUrl: "http://comments-production:4001"
+  queryUrl: "http://query-production:4002"
+  moderationUrl: "http://moderation-production:4003"
   nodeEnv: production
 
 secret:

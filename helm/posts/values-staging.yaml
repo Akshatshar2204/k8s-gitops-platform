@@ -6,6 +6,7 @@ image:
   tag: v2
 
 config:
+  eventBusUrl: "http://event-bus-staging:4005"
   NODE_ENV: staging
 
 resources:

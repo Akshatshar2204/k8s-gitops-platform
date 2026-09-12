@@ -11,6 +11,10 @@ service:
   targetPort: 4005
 
 config:
+  postsUrl: "http://posts-staging:4000"
+  commentsUrl: "http://comments-staging:4001"
+  queryUrl: "http://query-staging:4002"
+  moderationUrl: "http://moderation-staging:4003"
   nodeEnv: staging
 
 secret:

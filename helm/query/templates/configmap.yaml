@@ -7,3 +7,4 @@ metadata:
 
 data:
   NODE_ENV: {{ .Values.config.nodeEnv | quote }}
+  EVENT_BUS_URL: {{ .Values.config.eventBusUrl | quote }}

@@ -11,6 +11,7 @@ service:
   targetPort: 4001
 
 config:
+  eventBusUrl: "http://event-bus-production:4005"
   NODE_ENV: production
 
 secret:

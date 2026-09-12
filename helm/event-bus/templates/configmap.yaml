@@ -7,3 +7,7 @@ metadata:
 
 data:
   NODE_ENV: {{ .Values.config.nodeEnv | quote }}
+  POSTS_URL: {{ .Values.config.postsUrl | quote }}
+  COMMENTS_URL: {{ .Values.config.commentsUrl | quote }}
+  QUERY_URL: {{ .Values.config.queryUrl | quote }}
+  MODERATION_URL: {{ .Values.config.moderationUrl | quote }}

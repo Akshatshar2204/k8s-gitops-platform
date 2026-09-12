@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const axios = require("axios");
 
+const EVENT_BUS_URL = process.env.EVENT_BUS_URL || "http://event-bus-srv:4005";
+
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
@@ -51,7 +53,7 @@ app.post("/events", (req, res) => {
 app.listen(4002, async () => {
   console.log("Listening on 4002");
 
-  const res = await axios.get("http://event-bus-srv:4005/events");
+  const res = await axios.get(`${EVENT_BUS_URL}/events`);
 
   for (let event of res.data) {
     console.log("Processing event:", event.type);
