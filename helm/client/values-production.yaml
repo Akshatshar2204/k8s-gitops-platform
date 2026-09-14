@@ -63,3 +63,6 @@ readinessProbe:
   periodSeconds: 10
   timeoutSeconds: 2
   failureThreshold: 3
+
+autoscaling:
+  enabled: false
