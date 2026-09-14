@@ -41,10 +41,9 @@ resources:
     memory: 256Mi
 
 startupProbe:
-  httpGet:
-    path: /
+  tcpSocket:
     port: http
-  failureThreshold: 30
+  failureThreshold: 60
   periodSeconds: 5
   timeoutSeconds: 2
 
