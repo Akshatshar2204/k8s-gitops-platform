@@ -3,7 +3,7 @@ replicaCount: 2
 image:
   repository: akshat120210/query
   pullPolicy: IfNotPresent
-  tag: v2
+  tag: v3
 
 service:
   type: ClusterIP
