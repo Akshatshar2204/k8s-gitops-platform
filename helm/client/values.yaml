@@ -40,6 +40,13 @@ resources:
     cpu: 200m
     memory: 256Mi
 
+startupProbe:
+  tcpSocket:
+    port: http
+  failureThreshold: 60
+  periodSeconds: 5
+  timeoutSeconds: 2
+
 livenessProbe:
   httpGet:
     path: /
