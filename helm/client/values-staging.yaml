@@ -3,11 +3,11 @@ replicaCount: 2
 image:
   repository: akshat120210/client
   pullPolicy: IfNotPresent
-  tag: v1
+  tag: v2
 
 service:
   type: ClusterIP
-  port: 3000
+  port: 80
 
 serviceAccount:
   create: true
@@ -41,9 +41,10 @@ resources:
     memory: 128Mi
 
 startupProbe:
-  tcpSocket:
+  httpGet:
+    path: /
     port: http
-  failureThreshold: 60
+  failureThreshold: 30
   periodSeconds: 5
   timeoutSeconds: 2
 
