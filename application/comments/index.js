@@ -1,72 +1,128 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const { randomBytes } = require("crypto");
-const cors = require("cors");
 const axios = require("axios");
+const { randomBytes } = require("crypto");
+const { createClient } = require("redis");
 
-const EVENT_BUS_URL = process.env.EVENT_BUS_URL || "http://event-bus-srv:4005";
+const EVENT_BUS_URL =
+  process.env.EVENT_BUS_URL || "http://event-bus-staging:4005";
+
+const REDIS_URL = process.env.REDIS_URL || "redis://redis:6379";
+
+const redis = createClient({ url: REDIS_URL });
+
+redis.on("error", (err) => {
+  console.error("Redis error:", err.message);
+});
 
 const app = express();
+
 app.use(bodyParser.json());
-app.use(cors());
 
-const commentsByPostId = {};
+function commentsKey(postId) {
+  return `comments:${postId}`;
+}
 
-app.get("/posts/:id/comments", (req, res) => {
-  res.send(commentsByPostId[req.params.id] || []);
+async function getComments(postId) {
+  const data = await redis.hGetAll(commentsKey(postId));
+
+  return Object.values(data).map((value) => JSON.parse(value));
+}
+
+app.get("/posts/:id/comments", async (req, res) => {
+  try {
+    res.send(await getComments(req.params.id));
+  } catch (error) {
+    console.error("GET comments error:", error.message);
+    res.status(500).send({ error: "Unable to load comments" });
+  }
 });
 
 app.post("/posts/:id/comments", async (req, res) => {
+  const postId = req.params.id;
   const commentId = randomBytes(4).toString("hex");
   const { content } = req.body;
 
-  const comments = commentsByPostId[req.params.id] || [];
+  const comment = {
+    id: commentId,
+    content,
+    status: "pending",
+    postId,
+  };
 
-  comments.push({ id: commentId, content, status: "pending" });
+  try {
+    await redis.hSet(
+      commentsKey(postId),
+      commentId,
+      JSON.stringify(comment)
+    );
 
-  commentsByPostId[req.params.id] = comments;
+    try {
+      await axios.post(
+        `${EVENT_BUS_URL}/events`,
+        {
+          type: "CommentCreated",
+          data: comment,
+        },
+        { timeout: 5000 }
+      );
+    } catch (eventError) {
+      console.error("Event Bus error:", eventError.message);
+    }
 
-  await axios.post(`${EVENT_BUS_URL}/events`, {
-    type: "CommentCreated",
-    data: {
-      id: commentId,
-      content,
-      postId: req.params.id,
-      status: "pending",
-    },
-  });
-
-  res.status(201).send(comments);
+    res.status(201).send(await getComments(postId));
+  } catch (error) {
+    console.error("POST comment error:", error.message);
+    res.status(500).send({ error: "Unable to create comment" });
+  }
 });
 
 app.post("/events", async (req, res) => {
-  console.log("Event Received:", req.body.type);
-
   const { type, data } = req.body;
 
-  if (type === "CommentModerated") {
-    const { postId, id, status, content } = data;
-    const comments = commentsByPostId[postId];
+  try {
+    if (type === "CommentModerated") {
+      const commentKey = commentsKey(data.postId);
 
-    const comment = comments.find((comment) => {
-      return comment.id === id;
-    });
-    comment.status = status;
+      const existing = await redis.hGet(commentKey, data.id);
 
-    await axios.post(`${EVENT_BUS_URL}/events`, {
-      type: "CommentUpdated",
-      data: {
-        id,
-        status,
-        postId,
-        content,
-      },
-    });
+      if (!existing) {
+        console.warn(
+          `Comment ${data.id} not found for post ${data.postId}; ignoring update`
+        );
+        return res.send({});
+      }
+
+      const comment = JSON.parse(existing);
+
+      comment.status = data.status;
+      comment.content = data.content ?? comment.content;
+
+      await redis.hSet(
+        commentKey,
+        data.id,
+        JSON.stringify(comment)
+      );
+
+      console.log("Event Received: CommentModerated");
+    }
+  } catch (error) {
+    console.error("Comment event error:", error.message);
+    return res.status(500).send({ error: "Unable to process event" });
   }
 
   res.send({});
 });
 
-app.listen(4001, () => {
-  console.log("Listening on 4001");
+async function start() {
+  await redis.connect();
+
+  app.listen(4001, () => {
+    console.log("Comments service listening on 4001");
+  });
+}
+
+start().catch((error) => {
+  console.error("Comments startup error:", error);
+  process.exit(1);
 });
